@@ -24,6 +24,12 @@ double random_double(double min, double max) {
     return random_01() * (max - min) + min;
 }
 
+int sign(double val) {
+    if (val < -eps) return -1;
+    if (-eps <= val && val <= eps) return 0;
+    return 1;
+}
+
 struct interval {
     double left, right;
     interval(): left(0), right(inf) {}
