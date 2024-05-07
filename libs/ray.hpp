@@ -6,17 +6,10 @@
 
 struct ray {
     point3 orig;
+    double tim;
     vec3 dir;
     CUDA_PREFIX ray() = default;
-    CUDA_PREFIX ray(point3 p, vec3 v): orig(p), dir(v.unit()) {}
-    CUDA_PREFIX point3 operator()(double t) const {
-        return orig + dir * t;
-    }
-    CUDA_PREFIX double time(const point3 &p) const {
-        vec3 dist = p - orig;
-        if (dot(dist, dir) < 0) return -1;
-        return dist.len();
-    }
+    CUDA_PREFIX ray(point3 p, vec3 v): orig(p), dir(v.unit()), tim(random_01()) {}
 };
 
 #endif

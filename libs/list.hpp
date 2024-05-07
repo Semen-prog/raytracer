@@ -21,7 +21,7 @@ class ObjectList {
         lib = new Object[size];
         len = 0;
     }
-    CUDA_PREFIX void add(Shape *sh, Style *st) {
+    inline CUDA_PREFIX void add(Shape *sh, Style *st) {
         lib[len++] = {sh, st};
     }
     CUDA_PREFIX bool intersect(const ray& r, interval zone, color& attenuation, ray& scattered) const {

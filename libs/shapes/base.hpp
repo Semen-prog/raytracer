@@ -43,6 +43,7 @@ CUDA_PREFIX bool refract(const vec3& v, const vec3 &n, double index, vec3 &resul
 
 class Shape {
  public:
+    vec3 mov;
     CUDA_PREFIX virtual ~Shape() = default;
     CUDA_PREFIX virtual bool intersect(const ray& r, interval zone, shape_record& rec) const = 0;
 };

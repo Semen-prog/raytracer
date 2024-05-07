@@ -14,7 +14,7 @@ class Pyramid : public Shape {
         int cnt = 0;
         point3 pp[3];
         for (int i = 0; i < 4; ++i) {
-            if (i != dlt) pp[cnt++] = ps[i];
+            if (i != dlt) pp[cnt++] = ps[i] + mov * r.tim;
         }
         vec3 v1 = pp[1] - pp[0], v2 = pp[2] - pp[0];
         vec3 n = (v1 ^ v2).unit();
@@ -25,7 +25,7 @@ class Pyramid : public Shape {
         if (check_angl(it, pp[0], pp[1], pp[2]) && check_angl(it, pp[1], pp[0], pp[2]) && check_angl(it, pp[2], pp[0], pp[1])) {
             rec.p = it;
             rec.t = tim;
-            rec.set_normal(n * dot(ps[dlt] - pp[0], n), r, true);
+            rec.set_normal(n * dot(ps[dlt] + mov * r.tim - pp[0], n), r, true);
             return true;
         }
         return false;
@@ -36,6 +36,14 @@ class Pyramid : public Shape {
         ps[1] = p2;
         ps[2] = p3;
         ps[3] = p4;
+        mov = vec3(0, 0, 0);
+    }
+    CUDA_PREFIX Pyramid(const point3 &p1, const point3 &p2, const point3 &p3, const point3 &p4, const vec3 &v) {
+        ps[0] = p1;
+        ps[1] = p2;
+        ps[2] = p3;
+        ps[3] = p4;
+        mov = v;
     }
     CUDA_PREFIX bool intersect(const ray& r, interval zone, shape_record& rec) const override {
         shape_record temp_rec;

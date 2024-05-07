@@ -37,17 +37,17 @@ __global__ void init() {
                     // diffuse
                     auto albedo = random_color(0, 1) * random_color(0, 1);
                     sphere_material = new Lamberitan(albedo);
-                    vp.world.add(new Sphere(center, 0.2), sphere_material);
+                    vp.world.add(new Sphere(center, 0.2, vec3(0, random_double(0, 0.2), 0)), sphere_material);
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = random_color(0.5, 1);
                     auto fuzz = random_double(0, 0.5);
                     sphere_material = new Metal(albedo, fuzz);
-                    vp.world.add(new Sphere(center, 0.2), sphere_material);
+                    vp.world.add(new Sphere(center, 0.2, vec3(0, random_double(0, 0.2), 0)), sphere_material);
                 } else {
                     // glass
                     sphere_material = new Dielectric(1.5);
-                    vp.world.add(new Sphere(center, 0.2), sphere_material);
+                    vp.world.add(new Sphere(center, 0.2, vec3(0, random_double(0, 0.2), 0)), sphere_material);
                 }
             }
         }
