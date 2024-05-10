@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 #ifdef ENABLE_CUDA
 #define CUDA_PREFIX __device__
@@ -13,6 +14,7 @@
 #endif
 
 #define sq(x) ((x)*(x))
+#define GAMMA 2
 CUDA_PREFIX constexpr double eps = 1e-5;
 CUDA_PREFIX constexpr double inf = 1'000'000'000'000'000'000;
 
@@ -59,11 +61,13 @@ struct interval {
     }
 };
 
-inline CUDA_PREFIX double cuda_min(double a, double b) {
+template<typename T>
+inline CUDA_PREFIX T cuda_min(T a, T b) {
     return a < b ? a: b;
 }
 
-inline CUDA_PREFIX double cuda_max(double a, double b) {
+template<typename T>
+inline CUDA_PREFIX T cuda_max(T a, T b) {
     return a > b ? a: b;
 }
 

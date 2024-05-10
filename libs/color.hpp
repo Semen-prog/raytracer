@@ -11,7 +11,7 @@ inline CUDA_PREFIX color gamma_correction(const color &pixel, double gamma) {
 }
 
 inline CUDA_PREFIX color prepare_color(const color &pixel) {
-    return gamma_correction(pixel, 2) * 255.0;
+    return gamma_correction(pixel, GAMMA) * 255.0;
 }
 
 inline CUDA_PREFIX color random_color(double min, double max) {

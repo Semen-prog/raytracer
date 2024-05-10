@@ -29,7 +29,9 @@ class Sphere : public Shape {
         }
         if (zone.surrounds(t)) {
             rec.p = p, rec.t = t;
-            rec.set_normal((p - center - mov * r.tim).unit(), r, false);
+            vec3 norm = (p - center - mov * r.tim).unit();
+            rec.set_normal(norm, r, false);
+            rec.sphere_project(norm);
             return true;
         }
         return false;

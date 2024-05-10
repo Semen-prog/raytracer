@@ -26,6 +26,7 @@ class Pyramid : public Shape {
             rec.p = it;
             rec.t = tim;
             rec.set_normal(n * dot(dt - pp[0], n), r, true);
+            rec.sphere_project(it - (pp[0] + pp[1] + pp[2] + dt) / 4);
             return true;
         }
         return false;

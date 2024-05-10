@@ -10,6 +10,8 @@ struct shape_record {
     vec3 normal;
     double t;
     bool in_face;
+    double x;
+    double y;
     CUDA_PREFIX void set_normal(const vec3 &n, const ray &r, bool ifc) {
         if (dot(n, r.dir) >= 0) {
             normal = -n.unit();
@@ -18,6 +20,10 @@ struct shape_record {
             normal = n.unit();
             in_face = ifc;
         }
+    }
+    CUDA_PREFIX void sphere_project(const vec3 &n) {
+        x = (atan2(n.y, n.x) + pi + eps) / (2 * pi);
+        y = (atan2(n.z, sqrt(sq(n.x) + sq(n.y))) + pi / 2 + eps) / pi;
     }
 };
 

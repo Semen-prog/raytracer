@@ -1,8 +1,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "shapes.hpp"
-#include "styles.hpp"
+#include "shapes/shapes.hpp"
+#include "styles/styles.hpp"
 
 struct Object {
     Shape *shape;

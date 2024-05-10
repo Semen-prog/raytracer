@@ -5,8 +5,9 @@
 #include "vec3.hpp"
 #include "ray.hpp"
 #include "color.hpp"
-#include "shapes.hpp"
-#include "styles.hpp"
+#include "shapes/shapes.hpp"
+#include "textures/textures.hpp"
+#include "styles/styles.hpp"
 #include "list.hpp"
 #include "viewport.hpp"
 

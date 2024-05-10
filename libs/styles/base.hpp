@@ -3,7 +3,8 @@
 
 #include "../color.hpp"
 #include "../ray.hpp"
-#include "../shapes.hpp"
+#include "../shapes/shapes.hpp"
+#include "../textures/textures.hpp"
 
 class Style {
  public:
