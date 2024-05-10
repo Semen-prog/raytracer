@@ -4,7 +4,7 @@
 #include "libs/includes.hpp"
 
 __device__ Viewport vp;
-__device__ int pw, ph;
+__device__ int pw, ph, mt;
 
 __global__ void init() {
     vp = Viewport(
@@ -64,26 +64,30 @@ __global__ void init() {
 }
 
 __global__ void render(color *arr) {
-    int i = blockIdx.x;
+    int i = blockIdx.x * mt + threadIdx.x;
+    if (i >= pw * ph) return;
     arr[i] = prepare_color(vp.get_pixel_color(i % pw, i / pw));
 }
 
 int main() {
-    int pixel_width = 1366, pixel_height = 768;
+    int pixel_width = 1366, pixel_height = 768, max_thread = 512;
     cudaMemcpyToSymbol(pw, &pixel_width, sizeof(int));
     cudaMemcpyToSymbol(ph, &pixel_height, sizeof(int));
+    cudaMemcpyToSymbol(mt, &max_thread, sizeof(int));
     
     init<<<1, 1>>>();
     cudaDeviceSynchronize();
 
-    color *phost = (color*)malloc(pixel_height * pixel_width * sizeof(color)), *pdevice;
-    cudaMalloc(&pdevice, pixel_height * pixel_width * sizeof(color));
+    int size = pixel_height * pixel_width;
+
+    color *phost = (color*)malloc(size * sizeof(color)), *pdevice;
+    cudaMalloc(&pdevice, size * sizeof(color));
     
-    render<<<pixel_height * pixel_width, 1>>>(pdevice);
-    cudaMemcpy(phost, pdevice, pixel_height * pixel_width * sizeof(color), cudaMemcpyDeviceToHost);
+    render<<<(size + max_thread - 1) / max_thread, max_thread>>>(pdevice);
+    cudaMemcpy(phost, pdevice, size * sizeof(color), cudaMemcpyDeviceToHost);
 
     std::cout << "P3\n" << pixel_width << ' ' << pixel_height << "\n255\n";
-    for (int i = 0; i < pixel_height * pixel_width; ++i) {
+    for (int i = 0; i < size; ++i) {
         auto pixel_formed = phost[i];
         std::cout << std::round(pixel_formed.x) << ' ' << std::round(pixel_formed.y) << ' ' << std::round(pixel_formed.z) << '\n';
     }

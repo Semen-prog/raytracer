@@ -22,6 +22,7 @@ class Dielectric: public Style {
             s_dir = reflect(r_in.dir, rec.normal);
         }
         scattered = ray(rec.p, s_dir);
+        scattered.tim = r_in.tim;
         attenuation = color(1, 1, 1);
     }
 };

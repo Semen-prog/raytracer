@@ -12,6 +12,7 @@ class Lamberitan: public Style {
         vec3 s_dir = rec.normal + random_unit();
         if (almost_zero(s_dir)) s_dir = rec.normal;
         scattered = ray(rec.p, s_dir);
+        scattered.tim = r_in.tim;
         attenuation = albedo;
     }
 };

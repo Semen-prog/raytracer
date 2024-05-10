@@ -13,6 +13,7 @@ class Metal: public Style {
         vec3 s_dir = reflect(r_in.dir, rec.normal);
         s_dir = s_dir.unit() + random_unit() * fizz;
         scattered = ray(rec.p, s_dir);
+        scattered.tim = r_in.tim;
         attenuation = albedo;
     }
 };

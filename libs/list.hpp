@@ -13,16 +13,19 @@ struct Object {
 
 class ObjectList {
  private:
-    int len;
+    int len, maxlen;
     Object *lib;
  public:
     CUDA_PREFIX ObjectList() = default;
     CUDA_PREFIX void allocate(int size) {
         lib = new Object[size];
+        maxlen = size;
         len = 0;
     }
-    inline CUDA_PREFIX void add(Shape *sh, Style *st) {
+    inline CUDA_PREFIX bool add(Shape *sh, Style *st) {
+        if (len == maxlen) return false;
         lib[len++] = {sh, st};
+        return true;
     }
     CUDA_PREFIX bool intersect(const ray& r, interval zone, color& attenuation, ray& scattered) const {
         shape_record temp_rec;

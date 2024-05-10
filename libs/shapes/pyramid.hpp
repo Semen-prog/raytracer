@@ -12,7 +12,7 @@ class Pyramid : public Shape {
     }
     CUDA_PREFIX bool check_pale(const ray &r, int dlt, shape_record &rec) const {
         int cnt = 0;
-        point3 pp[3];
+        point3 pp[3]; point3 dt = ps[dlt] + mov * r.tim;
         for (int i = 0; i < 4; ++i) {
             if (i != dlt) pp[cnt++] = ps[i] + mov * r.tim;
         }
@@ -25,7 +25,7 @@ class Pyramid : public Shape {
         if (check_angl(it, pp[0], pp[1], pp[2]) && check_angl(it, pp[1], pp[0], pp[2]) && check_angl(it, pp[2], pp[0], pp[1])) {
             rec.p = it;
             rec.t = tim;
-            rec.set_normal(n * dot(ps[dlt] + mov * r.tim - pp[0], n), r, true);
+            rec.set_normal(n * dot(dt - pp[0], n), r, true);
             return true;
         }
         return false;
