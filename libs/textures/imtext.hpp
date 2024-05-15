@@ -3,7 +3,7 @@
 
 #include "base.hpp"
 
-void parse(int &wa, int &ha, color *&arr, std::string path) {
+void parse_image(int &wa, int &ha, color *&arr, std::string path) {
     std::ifstream ifs(path);
     std::string tmp;
     int w, h, mxt;

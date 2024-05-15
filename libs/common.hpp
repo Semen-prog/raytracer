@@ -46,6 +46,16 @@ inline CUDA_PREFIX int sign(double val) {
     return 1;
 }
 
+template<typename T>
+inline CUDA_PREFIX T cuda_min(T a, T b) {
+    return a < b ? a: b;
+}
+
+template<typename T>
+inline CUDA_PREFIX T cuda_max(T a, T b) {
+    return a > b ? a: b;
+}
+
 struct interval {
     double left, right;
     CUDA_PREFIX interval(): left(0), right(inf) {}
@@ -59,16 +69,15 @@ struct interval {
     inline CUDA_PREFIX bool surrounds(double x) const {
         return left + eps < x && x < right - eps;
     }
+    inline CUDA_PREFIX interval operator|(const interval &i) const {
+        return interval(cuda_min(i.left, left), cuda_max(i.right, right));
+    }
+    inline CUDA_PREFIX interval operator|(double v) const {
+        return interval(cuda_min(v, left), cuda_max(v, right));
+    }
+    inline CUDA_PREFIX interval operator&(const interval &i) const {
+        return interval(cuda_max(i.left, left), cuda_min(i.right, right));
+    }
 };
-
-template<typename T>
-inline CUDA_PREFIX T cuda_min(T a, T b) {
-    return a < b ? a: b;
-}
-
-template<typename T>
-inline CUDA_PREFIX T cuda_max(T a, T b) {
-    return a > b ? a: b;
-}
 
 #endif

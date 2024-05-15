@@ -11,7 +11,7 @@ class Sphere : public Shape {
     CUDA_PREFIX Sphere(point3 _c, double _r): center(_c), radius(_r) {
         mov = vec3(0, 0, 0);
     }
-    CUDA_PREFIX Sphere(point3 _c, double _r, const vec3 &v): center(_c), radius(_r) {
+    CUDA_PREFIX Sphere(point3 _c, double _r, const vec3 &v): Sphere(_c, _r) {
         mov = v;
     }
     CUDA_PREFIX bool intersect(const ray& r, interval zone, shape_record& rec) const override {
@@ -31,7 +31,8 @@ class Sphere : public Shape {
             rec.p = p, rec.t = t;
             vec3 norm = (p - center - mov * r.tim).unit();
             rec.set_normal(norm, r, false);
-            rec.sphere_project(norm);
+            rec.x = (atan2(norm.y, norm.x) + pi + eps) / (2 * pi);
+            rec.y = (atan2(norm.z, sqrt(sq(norm.x) + sq(norm.y))) + pi / 2 + eps) / pi;
             return true;
         }
         return false;

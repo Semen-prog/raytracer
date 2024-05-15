@@ -3,6 +3,6 @@
 
 #include "base.hpp"
 #include "sphere.hpp"
-#include "pyramid.hpp"
+#include "parallelepiped.hpp"
 
 #endif
