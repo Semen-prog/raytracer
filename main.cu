@@ -13,29 +13,38 @@ void load_image(int &w, int &h, color *&darr, std::string path) {
     cudaMemcpy(darr, arr, w * h * sizeof(color), cudaMemcpyHostToDevice);
 }
 
-__global__ void init() {
+__global__ void init(int imw, int imh, color *imarr) {
     vp = Viewport(
-        pw,               // pixel width
-        ph,               // pixel height
-        rad(20),          // field of view (rad)
-        500,               // samples per pixel
-        0.5,              // x-offset for sampling
-        0.5,              // y-offset for sampling
-        10,               // max depth
-        point3(8, 2, 3), // lookfrom
+        pw,                     // pixel width
+        ph,                     // pixel height
+        rad(20),                // field of view (rad)
+        500,                    // samples
+        0.5,                    // x-offset for sampling
+        0.5,                    // y-offset for sampling
+        10,                     // max depth
+        point3(8, 2, 3),        // lookfrom
         point3(0.5, 0.5, 0.5),  // lookat
-        vec3(0, 1, 0),    // dir up(int)(darr[0].x + 2)
-        rad(0),           // defocus angle
-        1000               // max fig cnt
+        vec3(0, 1, 0),          // dir up(int)(darr[0].x + 2)
+        rad(0),                 // defocus angle
+        1000                    // max fig cnt
     );
 
-    auto ground_material = new Lamberitan(new Solid(color(0.5, 0.5, 0.5)));
-    vp.world.add(new Parallelepiped(point3(-1, 0, -1), point3(9, 0, -1), point3(9, 0, 4), point3(-1, 0, 4), point3(-1, 3, -1), point3(9, 3, -1), point3(9, 3, 4), point3(-1, 3, 4)), ground_material);
+    auto ground_material = new Lamberitan(new Solid(color(1, 1, 1)));
+    vp.world.add(new Parallelepiped(point3(-1, -10, -1), point3(9, -10, -1), point3(9, -10, 4), point3(-1, -10, 4), point3(-1, 3, -1), point3(9, 3, -1), point3(9, 3, 4), point3(-1, 3, 4)), ground_material);
 
-    auto rnd_material = new Metal(0, new Solid(color(0.3, 1, 0.3)));
-    auto par_material = new Metal(0, new Solid(color(1, 0, 0)));
-    vp.world.add(new Sphere(point3(2.5, 0.5, 0.5), 0.5), rnd_material);
-    vp.world.add(new Parallelepiped(point3(0, 0, 0), point3(1, 0, 0), point3(1, 0, 1), point3(0, 0, 1), point3(0, 1, 0), point3(1, 1, 0), point3(1, 1, 1), point3(0, 1, 1)), par_material);
+    auto light_material = new Lamp(color(1, 1, 1));
+    vp.world.add(new Parallelepiped(point3(-1, 0.5, 1.5), point3(-0.5, 0.5, 1.5), point3(-0.5, 0.5, 2.5), point3(-1, 0.5, 2.5), point3(-1, 1.5, 1.5), point3(-0.5, 1.5, 1.5), point3(-0.5, 1.5, 2.5), point3(-1, 1.5, 2.5)), light_material);
+
+    auto par_material = new Lamberitan(new Solid(color(5.0 / 255, 107.0 / 255, 0)));
+    for (double i = 0; i < 5.3; i += 0.5) {
+        for (double j = 0; j < 5.3; j += 0.5) {
+            double h = random_double(-0.5, 0.5);
+            vp.world.add(new Parallelepiped(point3(i, -10, j), point3(i + 1, -10, j), point3(i + 1, -10, j + 1), point3(i, -10, j + 1), point3(i, h, j), point3(i + 1, h, j), point3(i + 1, h, j + 1), point3(i, h, j + 1)), par_material);
+        }
+    }
+
+    auto earth_material = new Lamberitan(new Imtext(imw, imh, imarr));
+    vp.world.add(new Sphere(point3(0.5, 1, 0.5), 0.5), earth_material);
 }
 
 __global__ void render(color *arr) {
@@ -49,8 +58,11 @@ int main() {
     cudaMemcpyToSymbol(pw, &pixel_width, sizeof(int));
     cudaMemcpyToSymbol(ph, &pixel_height, sizeof(int));
     cudaMemcpyToSymbol(mt, &max_thread, sizeof(int));
+
+    int imw, imh; color *imarr;
+    load_image(imw, imh, imarr, "earthmap.ppm");
     
-    init<<<1, 1>>>();
+    init<<<1, 1>>>(imw, imh, imarr);
     cudaDeviceSynchronize();
 
     int size = pixel_height * pixel_width;

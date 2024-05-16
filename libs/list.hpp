@@ -27,14 +27,14 @@ class ObjectList {
         lib[len++] = {sh, st};
         return true;
     }
-    CUDA_PREFIX bool intersect(const ray& r, interval zone, color& attenuation, ray& scattered) const {
+    CUDA_PREFIX bool intersect(const ray& r, interval zone, bool &issc, color &attenuation, ray &scattered) const {
         shape_record temp_rec;
         bool good = false;
         for (int i = 0; i < len; ++i) {
             if (lib[i].shape->intersect(r, zone, temp_rec)) {
                 zone.right = temp_rec.t;
                 good = true;
-                lib[i].style->scatter(r, temp_rec, attenuation, scattered);
+                issc = lib[i].style->scatter(r, temp_rec, attenuation, scattered);
             }
         }
         return good;

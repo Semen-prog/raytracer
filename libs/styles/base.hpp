@@ -9,9 +9,7 @@
 class Style {
  public:
     CUDA_PREFIX virtual ~Style() = default;
-    CUDA_PREFIX virtual void scatter(const ray& r_in, const shape_record& rec, color& attenuation, ray& scattered) const {
-        return;
-    }
+    CUDA_PREFIX virtual bool scatter(const ray& r_in, const shape_record& rec, color& attenuation, ray& scattered) const = 0;
 };
 
 #endif

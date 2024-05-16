@@ -5,5 +5,6 @@
 #include "lamberitan.hpp"
 #include "metal.hpp"
 #include "dielectric.hpp"
+#include "lamp.hpp"
 
 #endif

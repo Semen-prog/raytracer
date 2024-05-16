@@ -76,11 +76,13 @@ class Viewport {
         ray temp_ray = r;
         for (int i = 0; i < depth; ++i) {
             if (almost_zero(attenuation_all)) return color(0, 0, 0);
+            bool issc;
             color attenuation;
             ray scattered;
-            if (world.intersect(temp_ray, interval(0, inf), attenuation, scattered)) {
+            if (world.intersect(temp_ray, interval(0, inf), issc, attenuation, scattered)) {
                 attenuation_all = attenuation_all * attenuation;
                 temp_ray = scattered;
+                if (!issc) return attenuation_all;
             } else {
                 auto a = 0.5 * (r.dir.y + 1);
                 return (color(1.0, 1.0, 1.0) * (1 - a) + color(0.5, 0.7, 1.0) * a) * attenuation_all;
