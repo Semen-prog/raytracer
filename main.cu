@@ -1,10 +1,25 @@
 #define ENABLE_CUDA
 
-#include <cuda_runtime.h>
-#include "libs/includes.hpp"
+#include "my_raytracing.hpp"
 
 __device__ Viewport vp;
 __device__ int pw, ph, mt;
+
+void parse_image(int &wa, int &ha, color *&arr, std::string path) {
+    std::ifstream ifs(path);
+    std::string tmp;
+    int w, h, mxt;
+    ifs >> tmp >> w >> h >> mxt;
+    arr = new color[w * h];
+    wa = w, ha = h;
+    for (int i = 0; i < w * h; ++i) {
+        int r, g, b;
+        ifs >> r >> g >> b;
+        arr[i].x = (double)r / mxt;
+        arr[i].y = (double)g / mxt;
+        arr[i].z = (double)b / mxt;
+    }
+}
 
 void load_image(int &w, int &h, color *&darr, std::string path) {
     color *arr;
