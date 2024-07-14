@@ -5,11 +5,11 @@
 
 class Checker : public Texture {
  private:
-    std::shared_ptr<Texture> odd, even;
+    Color odd, even;
     long double dx, dy, dz;
  public:
     Checker() = default;
-    Checker(const std::shared_ptr<Texture> &o, const std::shared_ptr<Texture> &e, long double x, long double y, long double z): odd(o), even(e), dx(x), dy(y), dz(z) {}
+    Checker(const Color &o, const Color &e, long double x, long double y, long double z): odd(o), even(e), dx(x), dy(y), dz(z) {}
     Color value(const shape_record &rd) const override;
 };
 
