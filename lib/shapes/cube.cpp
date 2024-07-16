@@ -63,3 +63,7 @@ bool Cube::hit(const Ray &r, Interval &zone, shape_record &rd) const {
     }
     return false;
 }
+
+std::shared_ptr<Shape> Cube::parse_json(const QJsonObject &json) {
+    return std::make_shared<Cube>(parse_json_pv(json, "center"), parse_json_double(json, "rx", eps), parse_json_double(json, "ry", eps), parse_json_double(json, "rz", eps));
+}

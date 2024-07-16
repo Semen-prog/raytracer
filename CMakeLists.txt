@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(LibTrace VERSION 0.1 LANGUAGES CXX)
 
+find_package(Qt5 COMPONENTS Core REQUIRED)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -Wshadow -Wconversion")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("Mode: debug")
@@ -22,9 +24,7 @@ include_directories(include)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-set(SOURCE_LIBRARY  lib/base.cpp
+set(SOURCE_EXE      lib/base.cpp
                     lib/vector.cpp
                     lib/color.cpp
                     lib/ray.cpp
@@ -47,6 +47,10 @@ set(SOURCE_LIBRARY  lib/base.cpp
                     
                     lib/list.cpp 
                     lib/viewport.cpp 
-                    lib/scene.cpp)
+                    lib/parse.cpp
+                    lib/scene.cpp
+                    
+                    bin/raycmd.cpp)
 
-add_library(trace SHARED ${SOURCE_LIBRARY})
+add_executable(raycmd ${SOURCE_EXE})
+target_link_libraries(raycmd Qt5::Core)

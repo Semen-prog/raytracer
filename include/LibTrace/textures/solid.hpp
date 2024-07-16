@@ -10,6 +10,7 @@ class Solid : public Texture {
     Solid() = default;
     Solid(const Color &a): albedo(a) {}
     Color value(const shape_record &rd) const override;
+    static std::shared_ptr<Texture> parse_json(const QJsonObject &json);
 };
 
 #endif // SOLID_H

@@ -29,3 +29,7 @@ bool Sphere::hit(const Ray &r, Interval &zone, shape_record &rd) const {
     zone.right = rd.t;
     return true;
 }
+
+std::shared_ptr<Shape> Sphere::parse_json(const QJsonObject &json) {
+    return std::make_shared<Sphere>(parse_json_pv(json, "center"), parse_json_double(json, "radius", eps));
+}

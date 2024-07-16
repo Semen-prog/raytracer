@@ -5,14 +5,17 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <utility>
 #include <vector>
 
+#include <QJsonObject>
+#include <QDebug>
+
 #ifdef DEBUG
 #include <chrono>
-#include <iostream>
 #endif // DEBUG
 
 extern std::mt19937 rnd;
@@ -48,6 +51,12 @@ Vector operator/(const Vector &v, long double x);
 
 using Point = Vector;
 using Color = Vector;
+
+int parse_json_int(const QJsonObject &json, const QString &name, int left = INT32_MIN, int right = INT32_MAX);
+long double parse_json_double(const QJsonObject &json, const QString &name, long double left = -inf, long double right = inf);
+QString parse_json_string(const QJsonObject &json, const QString &name);
+Vector parse_json_pv(const QJsonObject &json, const QString &name);
+Color parse_json_color(const QJsonObject &json, const QString &name);
 
 Vector random_unit();
 
@@ -141,6 +150,11 @@ class Figure {
     bool hit(const Ray &r_in, Interval &zone, figure_record &fr) const;
 };
 
+enum Hittype {
+    SimpleHit,
+    HardHit
+};
+
 class FigureList {
    private:
     int n;
@@ -150,15 +164,13 @@ class FigureList {
     bool simple_hit(const Ray &r_in, Interval &zone, figure_record &fr) const;
     bool hard_hit(int p, int l, int r, const Ray &r_in, Interval &zone, figure_record &fr) const;
    public:
-    const static int SimpleHit = 0;
-    const static int HardHit = 1;
     FigureList() {
         n = 0;
         figs = {};
     }
     void add(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, std::shared_ptr<Texture> texture);
     void build();
-    bool hit(const Ray &r_in, figure_record &fr, int hittype) const;
+    bool hit(const Ray &r_in, figure_record &fr, Hittype hittype) const;
 };
 
 Vector random_unit_disk();
@@ -216,9 +228,9 @@ class Scene {
     int max_depth;
     Scene() = default;
     Scene(std::shared_ptr<FigureList> fl, std::shared_ptr<Viewport> vp, int spp, int md) : list(fl), viewport(vp), samples_per_pixel(spp), max_depth(md) {}
-    Color get_ray_color(int x, int y, int depth, int hittype) const;
-    std::tuple<int, int, int> get_pixel_color(int x, int y, int hittype) const;
-    std::vector<std::vector<std::tuple<int, int, int>>> render(int hittype = FigureList::SimpleHit);
+    Color get_ray_color(int x, int y, int depth, Hittype hittype) const;
+    std::tuple<int, int, int> get_pixel_color(int x, int y, Hittype hittype) const;
+    std::vector<std::vector<std::tuple<int, int, int>>> render(Hittype hittype = SimpleHit);
 };
 
 #endif // TRACING_H

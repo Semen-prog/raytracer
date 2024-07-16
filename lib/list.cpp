@@ -58,7 +58,7 @@ void FigureList::build() {
     t.resize(4 * n);
     build(0, 0, n);
 }
-bool FigureList::hit(const Ray &r_in, figure_record &fr, int hittype) const {
+bool FigureList::hit(const Ray &r_in, figure_record &fr, Hittype hittype) const {
     Interval zone(0, inf);
     if (hittype == SimpleHit) return simple_hit(r_in, zone, fr);
     return hard_hit(0, 0, n, r_in, zone, fr);

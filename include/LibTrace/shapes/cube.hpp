@@ -20,6 +20,7 @@ class Cube : public Shape {
         move = m;
     }
     bool hit(const Ray &r, Interval &zone, shape_record &rd) const override;
+    static std::shared_ptr<Shape> parse_json(const QJsonObject &json);
 };
 
 #endif // CUBE_H
