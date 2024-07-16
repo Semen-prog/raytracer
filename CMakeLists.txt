@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(LibTrace VERSION 0.1 LANGUAGES CXX)
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -Wshadow -Wconversion")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -53,4 +53,4 @@ set(SOURCE_EXE      lib/base.cpp
                     bin/raycmd.cpp)
 
 add_executable(raycmd ${SOURCE_EXE})
-target_link_libraries(raycmd Qt5::Core)
+target_link_libraries(raycmd Qt5::Core Qt5::Gui)

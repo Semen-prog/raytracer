@@ -13,7 +13,7 @@ Color Scene::get_ray_color(int x, int y, int depth, Hittype hittype) const {
     }
     return Color(0, 0, 0);
 }
-std::tuple<int, int, int> Scene::get_pixel_color(int x, int y, Hittype hittype) const {
+QColor Scene::get_pixel_color(int x, int y, Hittype hittype) const {
     Color fin(0, 0, 0);
     for (int _ = 0; _ < samples_per_pixel; ++_) {
         fin = fin + get_ray_color(x, y, max_depth, hittype);
@@ -21,13 +21,14 @@ std::tuple<int, int, int> Scene::get_pixel_color(int x, int y, Hittype hittype) 
     return correct(fin / samples_per_pixel);
 }
 
-std::vector<std::vector<std::tuple<int, int, int>>> Scene::render(Hittype hittype) {
+QImage Scene::render(Hittype hittype) {
     if (hittype == HardHit) list->build();
-    std::vector<std::vector<std::tuple<int, int, int>>> result(viewport->pixel_height, std::vector<std::tuple<int, int, int>>(viewport->pixel_width));
-    for (int y = 0; y < viewport->pixel_height; ++y) {
-        for (int x = 0; x < viewport->pixel_width; ++x) {
-            result[y][x] = get_pixel_color(x, y, hittype);
+    int pw = viewport->pixel_width, ph = viewport->pixel_height;
+    QImage img(pw, ph, QImage::Format_ARGB32);
+    for (int y = 0; y < ph; ++y) {
+        for (int x = 0; x < pw; ++x) {
+            img.setPixelColor(x, y, get_pixel_color(x, y, hittype));
         }
     }
-    return result;
+    return img;
 }

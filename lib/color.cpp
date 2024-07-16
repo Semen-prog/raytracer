@@ -8,9 +8,9 @@ int form(long double x) {
     return (int)(x * 255.0);
 }
 
-std::tuple<int, int, int> correct(const Color &col) {
+QColor correct(const Color &col) {
     auto corr = gamma_correction(col, 2);
-    return { form(corr.x), form(corr.y), form(corr.z) };
+    return QColor(form(corr.x), form(corr.y), form(corr.z));
 }
 
 bool almost_black(const Color &col) {

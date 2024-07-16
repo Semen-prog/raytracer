@@ -13,6 +13,8 @@
 
 #include <QJsonObject>
 #include <QDebug>
+#include <QImage>
+#include <QColor>
 
 #ifdef DEBUG
 #include <chrono>
@@ -61,7 +63,7 @@ Color parse_json_color(const QJsonObject &json, const QString &name);
 Vector random_unit();
 
 Color gamma_correction(const Color &col, long double gamma);
-std::tuple<int, int, int> correct(const Color &col);
+QColor correct(const Color &col);
 bool almost_black(const Color &col);
 
 class Ray {
@@ -229,8 +231,8 @@ class Scene {
     Scene() = default;
     Scene(std::shared_ptr<FigureList> fl, std::shared_ptr<Viewport> vp, int spp, int md) : list(fl), viewport(vp), samples_per_pixel(spp), max_depth(md) {}
     Color get_ray_color(int x, int y, int depth, Hittype hittype) const;
-    std::tuple<int, int, int> get_pixel_color(int x, int y, Hittype hittype) const;
-    std::vector<std::vector<std::tuple<int, int, int>>> render(Hittype hittype = SimpleHit);
+    QColor get_pixel_color(int x, int y, Hittype hittype) const;
+    QImage render(Hittype hittype = SimpleHit);
 };
 
 #endif // TRACING_H

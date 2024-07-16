@@ -16,6 +16,7 @@
 #include <QCommandLineParser>
 #include <QFile>
 #include <QJsonDocument>
+#include <QImageWriter>
 
 std::shared_ptr<Shape> (*shape_parsers[])(const QJsonObject&) = {
     Sphere::parse_json,
@@ -144,6 +145,11 @@ int main(int argc, char *argv[]) {
     parser.addVersionOption();
     parser.addPositionalArgument("config", QCoreApplication::translate("main", "Config file with scene structure."));
 
+    QString pf = QImageWriter::supportedImageFormats().join("/");
+    QCommandLineOption format_option(QStringList() << "o" << "output",
+                                     QCoreApplication::translate("main", QString("Output file name (suffix must be one of %1, default img.png)").arg(pf).toStdString().c_str()));
+    parser.addOption(format_option);
+
     parser.process(app);
     
     QStringList args = parser.positionalArguments();
@@ -152,18 +158,15 @@ int main(int argc, char *argv[]) {
         exit(127);
     }
 
+    QString output_name = "img.png";
+    if (parser.isSet(format_option)) {
+        output_name = parser.value(format_option);
+    }
+
     QString config_name = args.at(0);
     auto [scene, ht] = parse_json_scene(open_config(config_name));
-    auto result = scene->render((Hittype)ht);
-
-    int pw = scene->viewport->pixel_width;
-    int ph = scene->viewport->pixel_height;
-
-    std::cout << "P3\n" << pw << ' ' << ph << "\n255\n";
-    for (int i = 0; i < ph; ++i) {
-        for (int j = 0; j < pw; ++j) {
-            auto [r, g, b] = result[i][j];
-            std::cout << r << ' ' << g << ' ' << b << '\n';
-        }
+    if (!scene->render((Hittype)ht).save(output_name)) {
+        std::cerr << "Error: failed to save result to " << output_name.toStdString() << " (maybe wrong suffix?)\n";
+        exit(127);
     }
 }
