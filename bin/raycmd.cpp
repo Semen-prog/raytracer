@@ -18,24 +18,24 @@
 #include <QJsonDocument>
 #include <QImageWriter>
 
-std::shared_ptr<Shape> (*shape_parsers[])(const QJsonObject&) = {
+QSharedPointer<Shape> (*shape_parsers[])(const QJsonObject&) = {
     Sphere::parse_json,
     Cube::parse_json
 };
 
-std::shared_ptr<Material> (*material_parsers[])(const QJsonObject&) {
+QSharedPointer<Material> (*material_parsers[])(const QJsonObject&) {
     Lamberitan::parse_json,
     Metal::parse_json,
     Light::parse_json,
     Glass::parse_json
 };
 
-std::shared_ptr<Texture> (*texture_parsers[])(const QJsonObject&) {
+QSharedPointer<Texture> (*texture_parsers[])(const QJsonObject&) {
     Solid::parse_json,
     Checker::parse_json
 };
 
-std::shared_ptr<Shape> parse_json_shape(const QJsonObject &json, const QString &name) {
+QSharedPointer<Shape> parse_json_shape(const QJsonObject &json, const QString &name) {
     if (!json.contains(name) || !json[name].isObject()) {
         std::cerr << "Error: no such field: " << name.toStdString() << '\n';
         exit(127);
@@ -45,7 +45,7 @@ std::shared_ptr<Shape> parse_json_shape(const QJsonObject &json, const QString &
     return shape_parsers[type](obj);
 }
 
-std::shared_ptr<Material> parse_json_material(const QJsonObject &json, const QString &name) {
+QSharedPointer<Material> parse_json_material(const QJsonObject &json, const QString &name) {
     if (!json.contains(name) || !json[name].isObject()) {
         std::cerr << "Error: no such field: " << name.toStdString() << '\n';
         exit(127);
@@ -55,7 +55,7 @@ std::shared_ptr<Material> parse_json_material(const QJsonObject &json, const QSt
     return material_parsers[type](obj);
 }
 
-std::shared_ptr<Texture> parse_json_texture(const QJsonObject &json, const QString &name) {
+QSharedPointer<Texture> parse_json_texture(const QJsonObject &json, const QString &name) {
     if (!json.contains(name) || !json[name].isObject()) {
         std::cerr << "Error: no such field: " << name.toStdString() << '\n';
         exit(127);
@@ -65,13 +65,13 @@ std::shared_ptr<Texture> parse_json_texture(const QJsonObject &json, const QStri
     return texture_parsers[type](obj);
 }
 
-std::shared_ptr<FigureList> parse_json_figurelist(const QJsonObject &json, const QString &name) {
+QSharedPointer<FigureList> parse_json_figurelist(const QJsonObject &json, const QString &name) {
     if (!json.contains(name) || !json[name].isArray()) {
         std::cerr << "Error: no such field: " << name.toStdString() << '\n';
         exit(127);
     }
     QJsonArray arr = json[name].toArray();
-    auto fl = std::make_shared<FigureList>();
+    auto fl = QSharedPointer<FigureList>::create();
     for (int i = 0; i < arr.size(); ++i) {
         if (!arr.at(i).isObject()) {
             std::cerr << "Error: figure is not an object\n";
@@ -83,13 +83,13 @@ std::shared_ptr<FigureList> parse_json_figurelist(const QJsonObject &json, const
     return fl;
 }
 
-std::shared_ptr<Viewport> parse_json_viewport(const QJsonObject &json, const QString &name) {
+QSharedPointer<Viewport> parse_json_viewport(const QJsonObject &json, const QString &name) {
     if (!json.contains(name) || !json[name].isObject()) {
         std::cerr << "Error: no such field: " << name.toStdString() << '\n';
         exit(127);
     }
     QJsonObject obj = json[name].toObject();
-    return std::make_shared<Viewport>(
+    return QSharedPointer<Viewport>::create(
         parse_json_int(obj, "pixel_width", 1),
         parse_json_int(obj, "pixel_height", 1),
         radian(parse_json_double(obj, "field_of_view", 0, 180)),
@@ -98,18 +98,16 @@ std::shared_ptr<Viewport> parse_json_viewport(const QJsonObject &json, const QSt
         parse_json_pv(obj, "lookfrom"),
         parse_json_pv(obj, "lookat"),
         parse_json_pv(obj, "dir_up"),
-        radian(parse_json_double(obj, "defocus_angle", 0, 180))
-    );
+        radian(parse_json_double(obj, "defocus_angle", 0, 180)));
 }
 
-std::pair<std::shared_ptr<Scene>, int> parse_json_scene(const QJsonObject &json) {
-    return std::make_pair(
-        std::make_shared<Scene>(parse_json_figurelist(json, "figure_list"),
-                                parse_json_viewport(json, "viewport"),
-                                parse_json_int(json, "samples_per_pixel", 1),
-                                parse_json_int(json, "max_depth", 1)),
-        parse_json_int(json, "hittype", 0, 1)
-    );
+QPair<QSharedPointer<Scene>, int> parse_json_scene(const QJsonObject &json) {
+    return QPair(
+        QSharedPointer<Scene>::create(parse_json_figurelist(json, "figure_list"),
+                              parse_json_viewport(json, "viewport"),
+                              parse_json_int(json, "samples_per_pixel", 1),
+                              parse_json_int(json, "max_depth", 1)),
+        parse_json_int(json, "hittype", 0, 1));
 }
 
 QJsonObject open_config(const QString &config_name) {

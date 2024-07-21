@@ -1,27 +1,20 @@
 #ifndef TRACING_H
 #define TRACING_H
 
-#include <math.h>
+#include <QRandomGenerator>
+#include <QSharedPointer>
 
+#include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <iostream>
-#include <memory>
-#include <random>
-#include <utility>
-#include <vector>
 
 #include <QJsonObject>
-#include <QDebug>
 #include <QImage>
 #include <QColor>
 
 #ifdef DEBUG
 #include <chrono>
 #endif // DEBUG
-
-extern std::mt19937 rnd;
-extern std::uniform_real_distribution<long double> ud;
 
 int randint(int l, int r);
 long double uniform(long double l, long double r);
@@ -141,13 +134,13 @@ struct figure_record {
 
 class Figure {
    protected:
-    std::shared_ptr<Shape> shape;
-    std::shared_ptr<Material> material;
-    std::shared_ptr<Texture> texture;
+    QSharedPointer<Shape> shape;
+    QSharedPointer<Material> material;
+    QSharedPointer<Texture> texture;
 
    public:
     Figure() = default;
-    Figure(std::shared_ptr<Shape> s, std::shared_ptr<Material> m, std::shared_ptr<Texture> t) : shape(s), material(m), texture(t) {}
+    Figure(QSharedPointer<Shape> s, QSharedPointer<Material> m, QSharedPointer<Texture> t) : shape(s), material(m), texture(t) {}
     Bbox bbox() const;
     bool hit(const Ray &r_in, Interval &zone, figure_record &fr) const;
 };
@@ -170,7 +163,7 @@ class FigureList {
         n = 0;
         figs = {};
     }
-    void add(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, std::shared_ptr<Texture> texture);
+    void add(QSharedPointer<Shape> shape, QSharedPointer<Material> material, QSharedPointer<Texture> texture);
     void build();
     bool hit(const Ray &r_in, figure_record &fr, Hittype hittype) const;
 };
@@ -205,7 +198,7 @@ class Viewport {
         pixel_height = ph;
         center = lookfrom;
         long double focal_length = (lookat - lookfrom).length();
-        long double viewport_height = tan(fov / 2) * focal_length * 2;
+        long double viewport_height = tanl(fov / 2) * focal_length * 2;
         long double viewport_width = viewport_height * (double)pixel_width / (double)pixel_height;
         Vector front = (lookat - lookfrom).normalized();
         Vector right = Vector::crossProduct(front, dir_up).normalized();
@@ -217,19 +210,19 @@ class Viewport {
         upper_left = lookat - viewport_x / 2 - viewport_y / 2;
         offset_x = ox;
         offset_y = oy;
-        defocus_rad = focal_length * tan(da / 2);
+        defocus_rad = focal_length * tanl(da / 2);
     }
     Ray get_ray(int x, int y) const;
 };
 
 class Scene {
    public:
-    std::shared_ptr<FigureList> list;
-    std::shared_ptr<Viewport> viewport;
+    QSharedPointer<FigureList> list;
+    QSharedPointer<Viewport> viewport;
     int samples_per_pixel;
     int max_depth;
     Scene() = default;
-    Scene(std::shared_ptr<FigureList> fl, std::shared_ptr<Viewport> vp, int spp, int md) : list(fl), viewport(vp), samples_per_pixel(spp), max_depth(md) {}
+    Scene(QSharedPointer<FigureList> fl, QSharedPointer<Viewport> vp, int spp, int md) : list(fl), viewport(vp), samples_per_pixel(spp), max_depth(md) {}
     Color get_ray_color(int x, int y, int depth, Hittype hittype) const;
     QColor get_pixel_color(int x, int y, Hittype hittype) const;
     QImage render(Hittype hittype = SimpleHit);

@@ -6,7 +6,7 @@ Vector reflect(const Vector &d, const Vector &n) {
 
 Vector refract(const Vector &d, const Vector &n, long double ref) {
     long double r0 = powl((1 - ref) / (1 + ref), 2);
-    long double sf = r0 + (1 - r0) * powl(1 - std::min(1 - eps, Vector::dotProduct(-d, n)), 5);
+    long double sf = r0 + (1 - r0) * powl(1 - qMin(1 - eps, Vector::dotProduct(-d, n)), 5);
     if (sf < uniform(0, 1)) return reflect(d, n);
     Vector beta = d - n * Vector::dotProduct(d, n);
     long double sina = beta.length();

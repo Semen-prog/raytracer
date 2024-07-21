@@ -5,6 +5,6 @@ bool Lamberitan::scatter(const Ray& r_in, const shape_record& rd, Ray& scattered
     return true;
 }
 
-std::shared_ptr<Material> Lamberitan::parse_json(__attribute_maybe_unused__ const QJsonObject& json) {
-    return std::make_shared<Lamberitan>();
+QSharedPointer<Material> Lamberitan::parse_json(__attribute_maybe_unused__ const QJsonObject& json) {
+    return QSharedPointer<Lamberitan>::create();
 }

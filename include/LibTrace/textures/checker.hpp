@@ -11,7 +11,7 @@ class Checker : public Texture {
     Checker() = default;
     Checker(const Color &o, const Color &e, long double x, long double y, long double z): odd(o), even(e), dx(x), dy(y), dz(z) {}
     Color value(const shape_record &rd) const override;
-    static std::shared_ptr<Texture> parse_json(const QJsonObject &json);
+    static QSharedPointer<Texture> parse_json(const QJsonObject &json);
 };
 
 #endif // CHECKER_H

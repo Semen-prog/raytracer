@@ -10,7 +10,7 @@ class Glass : public Material {
     Glass() = default;
     Glass(long double ri): refraction_index(ri) {}
     bool scatter(const Ray& r_in, const shape_record& rd, Ray& scattered) const override;
-    static std::shared_ptr<Material> parse_json(const QJsonObject& json);
+    static QSharedPointer<Material> parse_json(const QJsonObject& json);
 };
 
 #endif // GLASS_H

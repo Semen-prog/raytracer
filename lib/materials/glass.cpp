@@ -5,6 +5,6 @@ bool Glass::scatter(const Ray& r_in, const shape_record& rd, Ray& scattered) con
     return true;
 }
 
-std::shared_ptr<Material> Glass::parse_json(const QJsonObject& json) {
-    return std::make_shared<Glass>(parse_json_double(json, "refraction_index", 1));
+QSharedPointer<Material> Glass::parse_json(const QJsonObject& json) {
+    return QSharedPointer<Glass>::create(parse_json_double(json, "refraction_index", 1));
 }

@@ -5,6 +5,6 @@ bool Metal::scatter(const Ray& r_in, const shape_record& rd, Ray& scattered) con
     return true;
 }
 
-std::shared_ptr<Material> Metal::parse_json(const QJsonObject& json) {
-    return std::make_shared<Metal>(parse_json_double(json, "fizz", 0));
+QSharedPointer<Material> Metal::parse_json(const QJsonObject& json) {
+    return QSharedPointer<Metal>::create(parse_json_double(json, "fizz", 0));
 }

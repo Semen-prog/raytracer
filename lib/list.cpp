@@ -49,7 +49,7 @@ bool FigureList::hard_hit(int p, int l, int r, const Ray &r_in, Interval &zone, 
     int mid = (l + r) / 2;
     return hard_hit(2 * p + 1, l, mid, r_in, zone, fr) | hard_hit(2 * p + 2, mid, r, r_in, zone, fr);
 }
-void FigureList::add(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material, std::shared_ptr<Texture> texture) {
+void FigureList::add(QSharedPointer<Shape> shape, QSharedPointer<Material> material, QSharedPointer<Texture> texture) {
     ++n;
     figs.emplace_back(shape, material, texture);
 }
