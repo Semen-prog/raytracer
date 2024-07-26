@@ -145,7 +145,8 @@ int main(int argc, char *argv[]) {
 
     QString pf = QImageWriter::supportedImageFormats().join("/");
     QCommandLineOption format_option(QStringList() << "o" << "output",
-                                     QCoreApplication::translate("main", QString("Output file name (suffix must be one of %1, default img.png)").arg(pf).toStdString().c_str()));
+                                     QCoreApplication::translate("main", QString("Output file name (suffix must be one of %1, default img.png)").arg(pf).toStdString().c_str()),
+                                     QCoreApplication::translate("main", "Output file"));
     parser.addOption(format_option);
 
     parser.process(app);
