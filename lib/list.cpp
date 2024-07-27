@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/list.hpp"
 
 Bbox Figure::bbox() const {
     return shape->bbox();

@@ -7,3 +7,7 @@ Color Solid::value(__attribute_maybe_unused__ const shape_record &rd) const {
 QSharedPointer<Texture> Solid::parse_json(const QJsonObject &json) {
     return QSharedPointer<Solid>::create(parse_json_color(json, "albedo"));
 }
+
+verdict Solid::check_json(const QJsonObject &json) {
+    return check_json_color(json, "albedo");
+}

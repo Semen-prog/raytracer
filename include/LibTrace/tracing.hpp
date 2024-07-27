@@ -1,231 +1,40 @@
-#ifndef TRACING_H
-#define TRACING_H
+#pragma once
 
-#include <QRandomGenerator>
-#include <QSharedPointer>
+#include "LibTrace/scene.hpp"
 
-#include <iostream>
-#include <algorithm>
-#include <cmath>
+#include "LibTrace/shapes/sphere.hpp"
+#include "LibTrace/shapes/cube.hpp"
 
-#include <QJsonObject>
-#include <QImage>
-#include <QColor>
+#include "LibTrace/materials/lamberitan.hpp"
+#include "LibTrace/materials/metal.hpp"
+#include "LibTrace/materials/light.hpp"
+#include "LibTrace/materials/glass.hpp"
 
-#ifdef DEBUG
-#include <chrono>
-#endif // DEBUG
+#include "LibTrace/textures/solid.hpp"
+#include "LibTrace/textures/checker.hpp"
 
-int randint(int l, int r);
-long double uniform(long double l, long double r);
+extern QSharedPointer<Shape> (*shape_parsers[])(const QJsonObject&);
+extern QSharedPointer<Material> (*material_parsers[])(const QJsonObject&);
+extern QSharedPointer<Texture> (*texture_parsers[])(const QJsonObject&);
 
-constexpr long double eps = 1e-6;
-constexpr long double inf = 1'000'000'000'000'000'000;
+extern verdict (*shape_checkers[])(const QJsonObject&);
+extern verdict (*material_checkers[])(const QJsonObject&);
+extern verdict (*texture_checkers[])(const QJsonObject&);
 
-#define radian(x) ((x) / 180.0 * (long double)M_PI)
+QSharedPointer<Shape> parse_json_shape(const QJsonObject &json, const QString &name);
+verdict check_json_shape(const QJsonObject &json, const QString &name);
 
-class Vector {
- public:
-    long double x, y, z;
-    Vector() = default;
-    Vector(long double _x, long double _y, long double _z): x(_x), y(_y), z(_z) {}
-    Vector normalized() const;
-    long double length() const;
-    static long double dotProduct(const Vector &v, const Vector &u);
-    static Vector crossProduct(const Vector &v, const Vector &u);
-    static Vector normal(const Vector &v, const Vector &u);
-};
+QSharedPointer<Material> parse_json_material(const QJsonObject &json, const QString &name);
+verdict check_json_material(const QJsonObject &json, const QString &name);
 
-Vector operator+(const Vector &v, const Vector &u);
-Vector operator*(const Vector &v, const Vector &u);
-Vector operator*(const Vector &v, long double x);
-Vector operator*(double x, const Vector &v);
-Vector operator-(const Vector &v);
-Vector operator-(const Vector &v, const Vector &u);
-Vector operator/(const Vector &v, long double x);
+QSharedPointer<Texture> parse_json_texture(const QJsonObject &json, const QString &name);
+verdict check_json_texture(const QJsonObject &json, const QString &name);
 
-using Point = Vector;
-using Color = Vector;
+QSharedPointer<FigureList> parse_json_figurelist(const QJsonObject &json, const QString &name);
+verdict check_json_figurelist(const QJsonObject &json, const QString &name);
 
-int parse_json_int(const QJsonObject &json, const QString &name, int left = INT32_MIN, int right = INT32_MAX);
-long double parse_json_double(const QJsonObject &json, const QString &name, long double left = -inf, long double right = inf);
-QString parse_json_string(const QJsonObject &json, const QString &name);
-Vector parse_json_pv(const QJsonObject &json, const QString &name);
-Color parse_json_color(const QJsonObject &json, const QString &name);
+QSharedPointer<Viewport> parse_json_viewport(const QJsonObject &json, const QString &name);
+verdict check_json_viewport(const QJsonObject &json, const QString &name);
 
-Vector random_unit();
-
-Color gamma_correction(const Color &col, long double gamma);
-QColor correct(const Color &col);
-bool almost_black(const Color &col);
-
-class Ray {
-   public:
-    Point start;
-    Vector dir;
-    long double time;
-    Ray() = default;
-    Ray(const Point &s, const Vector &d) : start(s), dir(d.normalized()), time(uniform(0, 1)) {}
-    Ray(const Point &s, const Vector &d, long double t) : start(s), dir(d.normalized()), time(t) {}
-    long double ptime(const Point &p) const;
-    Point operator()(long double t) const;
-};
-
-class Interval {
-   public:
-    long double left, right;
-    Interval() = default;
-    Interval(long double l, long double r) : left(l), right(r) {}
-    Interval operator&(const Interval &i) const;
-    Interval operator|(const Interval &i) const;
-    Interval operator+(long double x) const;
-    bool contains(long double x) const;
-    bool surrounds(long double x) const;
-    Interval hit(long double start, long double dir) const;
-    bool empty() const;
-};
-
-class Bbox {
-   public:
-    Interval x, y, z;
-    Bbox() = default;
-    Bbox(const Interval &_x, const Interval &_y, const Interval &_z) : x(_x), y(_y), z(_z) {}
-    Bbox operator+(const Vector &v) const;
-    Bbox operator|(const Bbox &b) const;
-    bool hit(const Ray &r, const Interval &zone) const;
-};
-
-struct shape_record {
-    Point p;
-    Vector n;
-    long double t;
-    bool ifc;
-    long double x, y;
-};
-
-class Shape {
-   protected:
-    Vector move;
-    virtual Bbox base_bbox() const = 0;
-
-   public:
-    Bbox bbox() const;
-    virtual bool hit(const Ray &r, Interval &zone, shape_record &rd) const = 0;
-};
-
-class Material {
-   public:
-    virtual bool scatter(const Ray &r_in, const shape_record &rd, Ray &scattered) const = 0;
-};
-
-Vector reflect(const Vector &d, const Vector &n);
-Vector refract(const Vector &d, const Vector &n, long double ref);
-
-class Texture {
-   public:
-    virtual Color value(const shape_record &rd) const = 0;
-};
-
-struct figure_record {
-    Color a;
-    Ray s;
-    bool r;
-};
-
-class Figure {
-   protected:
-    QSharedPointer<Shape> shape;
-    QSharedPointer<Material> material;
-    QSharedPointer<Texture> texture;
-
-   public:
-    Figure() = default;
-    Figure(QSharedPointer<Shape> s, QSharedPointer<Material> m, QSharedPointer<Texture> t) : shape(s), material(m), texture(t) {}
-    Bbox bbox() const;
-    bool hit(const Ray &r_in, Interval &zone, figure_record &fr) const;
-};
-
-enum Hittype {
-    SimpleHit,
-    HardHit
-};
-
-class FigureList {
-   private:
-    int n;
-    std::vector<Bbox> t;
-    std::vector<Figure> figs;
-    void build(int p, int l, int r);
-    bool simple_hit(const Ray &r_in, Interval &zone, figure_record &fr) const;
-    bool hard_hit(int p, int l, int r, const Ray &r_in, Interval &zone, figure_record &fr) const;
-   public:
-    FigureList() {
-        n = 0;
-        figs = {};
-    }
-    void add(QSharedPointer<Shape> shape, QSharedPointer<Material> material, QSharedPointer<Texture> texture);
-    void build();
-    bool hit(const Ray &r_in, figure_record &fr, Hittype hittype) const;
-};
-
-Vector random_unit_disk();
-
-class Viewport {
-   private:
-    Vector viewport_delta_x, viewport_delta_y;
-    Point upper_left;
-    Point center;
-    long double offset_x, offset_y;
-    long double defocus_rad;
-    Point random_orig() const;
-    Point get_pixel(int x, int y) const;
-
-   public:
-    int pixel_width, pixel_height;
-    Viewport() = default;
-    Viewport(
-        int pw,               // pixel width
-        int ph,               // pixel height
-        long double fov,      // vertical field of view
-        long double ox,       // offset for OX
-        long double oy,       // offset for OY
-        Point lookfrom,       // look from (camera position)
-        Point lookat,         // look at (image center)
-        Vector dir_up,        // up from camera
-        long double da        // defocus angle
-    ) {
-        pixel_width = pw;
-        pixel_height = ph;
-        center = lookfrom;
-        long double focal_length = (lookat - lookfrom).length();
-        long double viewport_height = tanl(fov / 2) * focal_length * 2;
-        long double viewport_width = viewport_height * (double)pixel_width / (double)pixel_height;
-        Vector front = (lookat - lookfrom).normalized();
-        Vector right = Vector::crossProduct(front, dir_up).normalized();
-        Vector up = Vector::crossProduct(right, front).normalized();
-        Vector viewport_x = right * viewport_width;
-        Vector viewport_y = (-up) * viewport_height;
-        viewport_delta_x = viewport_x / pixel_width;
-        viewport_delta_y = viewport_y / pixel_height;
-        upper_left = lookat - viewport_x / 2 - viewport_y / 2;
-        offset_x = ox;
-        offset_y = oy;
-        defocus_rad = focal_length * tanl(da / 2);
-    }
-    Ray get_ray(int x, int y) const;
-};
-
-class Scene {
-   public:
-    QSharedPointer<FigureList> list;
-    QSharedPointer<Viewport> viewport;
-    int samples_per_pixel;
-    int max_depth;
-    Scene() = default;
-    Scene(QSharedPointer<FigureList> fl, QSharedPointer<Viewport> vp, int spp, int md) : list(fl), viewport(vp), samples_per_pixel(spp), max_depth(md) {}
-    Color get_ray_color(int x, int y, int depth, Hittype hittype) const;
-    QColor get_pixel_color(int x, int y, Hittype hittype) const;
-    QImage render(Hittype hittype = SimpleHit);
-};
-
-#endif // TRACING_H
+QPair<QSharedPointer<Scene>, int> parse_json_scene(const QJsonObject &json);
+verdict check_json_scene(const QJsonObject &json);

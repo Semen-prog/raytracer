@@ -7,3 +7,7 @@ bool Light::scatter(__attribute_maybe_unused__ const Ray& r_in, __attribute_mayb
 QSharedPointer<Material> Light::parse_json(__attribute_maybe_unused__ const QJsonObject& json) {
     return QSharedPointer<Light>::create();
 }
+
+verdict Light::check_json(__attribute_maybe_unused__ const QJsonObject& json) {
+    return verdict();
+}

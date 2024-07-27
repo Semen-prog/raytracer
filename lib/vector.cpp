@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/vector.hpp"
 
 Vector Vector::normalized() const {
     long double len = length();

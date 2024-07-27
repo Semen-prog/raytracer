@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/color.hpp"
 
 Color gamma_correction(const Color &col, long double gamma) {
     return Color(powl(col.x, 1 / gamma), powl(col.y, 1 / gamma), powl(col.z, 1 / gamma));
@@ -14,5 +14,5 @@ QColor correct(const Color &col) {
 }
 
 bool almost_black(const Color &col) {
-    return abs(col.length()) < eps;
+    return qAbs(col.length()) < eps;
 }

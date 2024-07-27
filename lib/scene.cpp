@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/scene.hpp"
 
 Color Scene::get_ray_color(int x, int y, int depth, Hittype hittype) const {
     Color result(1, 1, 1);

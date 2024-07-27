@@ -1,7 +1,7 @@
-#ifndef CHECKER_H
-#define CHECKER_H
+#pragma once
 
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/textures.hpp"
+#include "LibTrace/parse.hpp"
 
 class Checker : public Texture {
  private:
@@ -12,6 +12,5 @@ class Checker : public Texture {
     Checker(const Color &o, const Color &e, long double x, long double y, long double z): odd(o), even(e), dx(x), dy(y), dz(z) {}
     Color value(const shape_record &rd) const override;
     static QSharedPointer<Texture> parse_json(const QJsonObject &json);
+    static verdict check_json(const QJsonObject &json);
 };
-
-#endif // CHECKER_H

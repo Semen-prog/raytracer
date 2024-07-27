@@ -1,7 +1,7 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#pragma once
 
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/shapes.hpp"
+#include "LibTrace/parse.hpp"
 
 class Sphere : public Shape {
    private:
@@ -19,6 +19,5 @@ class Sphere : public Shape {
     }
     bool hit(const Ray &r, Interval &zone, shape_record &rd) const override;
     static QSharedPointer<Shape> parse_json(const QJsonObject &json);
+    static verdict check_json(const QJsonObject &json);
 };
-
-#endif // SPHERE_H

@@ -8,10 +8,10 @@ void Cube::set_record(const Ray &r, long double tim, const Vector &n, shape_reco
     rd.ifc = Vector::dotProduct(n, tc - rd.p) > 0;
     Point cds = rd.p - tc + Vector(rx, ry, rz);
     cds = Point(cds.x / (2 * rx), cds.y / (2 * ry), cds.z / (2 * rz));
-    if (abs(n.x) > 0.5) {
+    if (qAbs(n.x) > 0.5) {
         rd.x = n.y;
         rd.y = n.z;
-    } else if (abs(n.y) > 0.5) {
+    } else if (qAbs(n.y) > 0.5) {
         rd.x = n.x;
         rd.y = n.z;
     } else {
@@ -65,5 +65,9 @@ bool Cube::hit(const Ray &r, Interval &zone, shape_record &rd) const {
 }
 
 QSharedPointer<Shape> Cube::parse_json(const QJsonObject &json) {
-    return QSharedPointer<Cube>::create(parse_json_pv(json, "center"), parse_json_double(json, "rx", eps), parse_json_double(json, "ry", eps), parse_json_double(json, "rz", eps));
+    return QSharedPointer<Cube>::create(parse_json_pv(json, "center"), parse_json_double(json, "rx"), parse_json_double(json, "ry"), parse_json_double(json, "rz"));
+}
+
+verdict Cube::check_json(const QJsonObject &json) {
+    return check_json_pv(json, "center") + check_json_double(json, "rx", eps) + check_json_double(json, "ry", eps) + check_json_double(json, "rz", eps);
 }

@@ -1,7 +1,7 @@
-#ifndef METAL_H
-#define METAL_H
+#pragma once
 
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/materials.hpp"
+#include "LibTrace/parse.hpp"
 
 class Metal : public Material {
  private:
@@ -11,6 +11,5 @@ class Metal : public Material {
     Metal(long double f): fizz(f) {}
     bool scatter(const Ray& r_in, const shape_record& rd, Ray& scattered) const override;
     static QSharedPointer<Material> parse_json(const QJsonObject& json);
+    static verdict check_json(const QJsonObject& json);
 };
-
-#endif // METAL_H

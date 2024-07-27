@@ -31,5 +31,9 @@ bool Sphere::hit(const Ray &r, Interval &zone, shape_record &rd) const {
 }
 
 QSharedPointer<Shape> Sphere::parse_json(const QJsonObject &json) {
-    return QSharedPointer<Sphere>::create(parse_json_pv(json, "center"), parse_json_double(json, "radius", eps));
+    return QSharedPointer<Sphere>::create(parse_json_pv(json, "center"), parse_json_double(json, "radius"));
+}
+
+verdict Sphere::check_json(const QJsonObject &json) {
+    return check_json_pv(json, "center") + check_json_double(json, "radius", eps);
 }

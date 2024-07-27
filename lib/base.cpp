@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/base.hpp"
 
 int randint(int l, int r) {
     return (int)(QRandomGenerator::global()->generate() % (quint32)(r - l)) + l;

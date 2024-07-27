@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/bbox.hpp"
 
 Bbox Bbox::operator+(const Vector &v) const {
     return Bbox(x + v.x, y + v.y, z + v.z);

@@ -49,6 +49,8 @@ set(SOURCE_EXE      lib/base.cpp
                     lib/viewport.cpp 
                     lib/parse.cpp
                     lib/scene.cpp
+
+                    lib/tracing.cpp
                     
                     bin/raycmd.cpp)
 

@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/viewport.hpp"
 
 Vector random_unit_disk() {
     return Vector(uniform(-1, 1), uniform(-1, 1), 0.0).normalized();

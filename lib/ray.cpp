@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/ray.hpp"
 
 long double Ray::ptime(const Point &p) const {
     return Vector::dotProduct(p - start, dir);

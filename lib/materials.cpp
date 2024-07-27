@@ -1,4 +1,4 @@
-#include "LibTrace/tracing.hpp"
+#include "LibTrace/materials.hpp"
 
 Vector reflect(const Vector &d, const Vector &n) {
     return d - 2 * n;
