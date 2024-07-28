@@ -119,18 +119,20 @@ verdict check_json_viewport(const QJsonObject &json, const QString &name) {
         check_json_double(obj, "defocus_angle", 0, 180);
 }
 
-QPair<QSharedPointer<Scene>, int> parse_json_scene(const QJsonObject &json) {
+QPair<QSharedPointer<Scene>, Hitinfo> parse_json_scene(const QJsonObject &json) {
     return QPair(
         QSharedPointer<Scene>::create(parse_json_figurelist(json, "figure_list"),
                                       parse_json_viewport(json, "viewport"),
                                       parse_json_int(json, "samples_per_pixel"),
                                       parse_json_int(json, "max_depth")),
-        parse_json_int(json, "hittype"));
+        Hitinfo(Hittype(parse_json_int(json, "hittype")),
+                Rendertype(parse_json_int(json, "rendertype"))));
 }
 verdict check_json_scene(const QJsonObject &json) {
     return check_json_figurelist(json, "figure_list") +
         check_json_viewport(json, "viewport") +
         check_json_int(json, "samples_per_pixel", 1) +
         check_json_int(json, "max_depth", 1) +
-        check_json_int(json, "hittype", 0, 1);
+        check_json_int(json, "hittype", 0, 1) +
+        check_json_int(json, "rendertype");
 }

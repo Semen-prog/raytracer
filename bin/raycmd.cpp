@@ -70,8 +70,8 @@ int main(int argc, char *argv[]) {
         exit(127);
     }
 
-    auto [scene, ht] = parse_json_scene(config);
-    if (!scene->render((Hittype)ht).save(output_name)) {
+    auto [scene, hi] = parse_json_scene(config);
+    if (!scene->render(hi).save(output_name)) {
         es << "Error: failed to save result to " << output_name << " (maybe wrong suffix?)\n";
         exit(127);
     }

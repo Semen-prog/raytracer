@@ -36,5 +36,5 @@ verdict check_json_figurelist(const QJsonObject &json, const QString &name);
 QSharedPointer<Viewport> parse_json_viewport(const QJsonObject &json, const QString &name);
 verdict check_json_viewport(const QJsonObject &json, const QString &name);
 
-QPair<QSharedPointer<Scene>, int> parse_json_scene(const QJsonObject &json);
+QPair<QSharedPointer<Scene>, Hitinfo> parse_json_scene(const QJsonObject &json);
 verdict check_json_scene(const QJsonObject &json);

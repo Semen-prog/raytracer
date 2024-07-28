@@ -24,7 +24,7 @@ include_directories(include)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCE_EXE      lib/base.cpp
+set(SOURCE_LIB      lib/base.cpp
                     lib/vector.cpp
                     lib/color.cpp
                     lib/ray.cpp
@@ -50,9 +50,11 @@ set(SOURCE_EXE      lib/base.cpp
                     lib/parse.cpp
                     lib/scene.cpp
 
-                    lib/tracing.cpp
-                    
-                    bin/raycmd.cpp)
+                    lib/tracing.cpp)
+add_library(trace SHARED ${SOURCE_LIB})
+target_link_libraries(trace Qt5::Core Qt5::Gui)
 
-add_executable(raycmd ${SOURCE_EXE})
-target_link_libraries(raycmd Qt5::Core Qt5::Gui)
+set(SOURCE_RAYCMD bin/raycmd.cpp)
+add_executable(raycmd ${SOURCE_RAYCMD})
+
+target_link_libraries(raycmd trace)
